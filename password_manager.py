@@ -96,8 +96,7 @@ def main():
             account = input("Enter account name: ")
             password = password_manager.get_password(account)
             if password:
-                # print(f"Password for {account}: {password}")
-                print(tabulate([[f"Password for {account}"], [f"{password}"]], headers="firstrow"))
+                print(tabulate([["Password:", password]], headers=[f"Password for {account}",""], tablefmt="fancy_grid"))
             else:
                 print(f"No password found for {account}.")
         elif choice == "3":
