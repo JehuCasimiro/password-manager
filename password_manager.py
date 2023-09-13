@@ -1,4 +1,5 @@
 import csv
+import os
 from cryptography.fernet import Fernet
 
 class PasswordManager:
@@ -27,13 +28,12 @@ class PasswordManager:
 
     def save_passwords_to_csv(self, filename):
         with open(filename, 'w', newline='') as csvfile:
-            fieldnames = ['Account', 'Password']
+            fieldnames = ['Account', 'EncryptedPassword']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
             for account, encrypted_password in self.passwords.items():
-                decrypted_password = self._decrypt(encrypted_password)
-                writer.writerow({'Account': account, 'Password': decrypted_password})
+                writer.writerow({'Account': account, 'EncryptedPassword': encrypted_password.decode()})
 
     def load_passwords_from_csv(self, filename):
         try:
@@ -41,17 +41,32 @@ class PasswordManager:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     account = row['Account']
-                    encrypted_password = self._encrypt(row['Password'])
+                    encrypted_password = row['EncryptedPassword'].encode()
                     self.passwords[account] = encrypted_password
         except FileNotFoundError:
             print("Password file not found. Creating a new one.")
 
-def main():
-    master_password = input("Enter your master password: ")
-    password_manager = PasswordManager(master_password)
+    def save_master_password_to_csv(self, filename):
+        with open(filename, 'w') as csvfile:
+            csvfile.write(self.master_password)
 
-    # Load passwords from CSV file if it exists
-    password_manager.load_passwords_from_csv('passwords.csv')
+def main():
+    master_password_filename = 'master_password.csv'
+    password_filename = 'passwords.csv'
+
+    if not os.path.exists(master_password_filename):
+        new_master_password = input("Enter a new master password: ")
+        password_manager = PasswordManager(new_master_password)
+        password_manager.save_master_password_to_csv(master_password_filename)
+    else:
+        with open(master_password_filename, 'r') as csvfile:
+            master_password = csvfile.read()
+            master_password_input = input("Enter your master password: ")
+            if master_password != master_password_input:
+                print("Incorrect master password. Exiting.")
+                return
+        password_manager = PasswordManager(master_password)
+        password_manager.load_passwords_from_csv(password_filename)
 
     while True:
         print("Password Manager Menu:")
@@ -75,7 +90,7 @@ def main():
             else:
                 print(f"No password found for {account}.")
         elif choice == "3":
-            password_manager.save_passwords_to_csv('passwords.csv')
+            password_manager.save_passwords_to_csv(password_filename)
             print("Passwords saved to CSV file.")
         elif choice == "4":
             print("Goodbye!")
