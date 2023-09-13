@@ -37,7 +37,7 @@ class PasswordManager:
             writer.writeheader()
 
             for account, encrypted_password in self.passwords.items():
-                writer.writerow({'Account': account, 'EncryptedPassword': encrypted_password.decode()})
+                writer.writerow({'Account': account, 'EncryptedPassword': encrypted_password})
 
     def load_passwords_from_csv(self, filename):
         try:
@@ -45,7 +45,7 @@ class PasswordManager:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     account = row['Account']
-                    encrypted_password = row['EncryptedPassword'].encode()
+                    encrypted_password = row['EncryptedPassword']
                     self.passwords[account] = encrypted_password
         except FileNotFoundError:
             print("Password file not found. Creating a new one.")
