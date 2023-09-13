@@ -1,4 +1,5 @@
 import csv
+import sys
 import os
 from cryptography.fernet import Fernet
 from tabulate import tabulate
@@ -65,7 +66,11 @@ def main():
     else:
         with open(master_password_filename, 'r') as csvfile:
             master_password = csvfile.read()
-            master_password_input = input("Enter your master password: ")
+            try:
+                master_password_input = input("Enter your master password: ")
+            except:
+                print("\n")
+                sys.exit("Goodbye!")
             if master_password != master_password_input:
                 print("Incorrect master password. Exiting.")
                 return
@@ -73,16 +78,25 @@ def main():
         password_manager.load_passwords_from_csv(password_filename)
 
     while True:
-        print("Password Manager Menu:")
-        print("1. Add Password")
-        print("2. Get Password")
-        print("3. Quit")
-
-        choice = input("Enter your choice: ")
+        
+        try:
+            print("Password Manager Menu:")
+            print("1. Add Password")
+            print("2. Get Password")
+            print("3. Quit")
+            choice = input("Enter your choice: ")
+            
+        except:
+            print("\n")
+            sys.exit("Goodbye!")
 
         if choice == "1":
-            account = input("Enter account name: ")
-            password = input("Enter password: ")
+            try:
+                account = input("Enter account name: ")
+                password = input("Enter password: ")
+            except:
+                print("\n")
+                sys.exit("Goodbye!")
             password_manager.add_password(account, password)
             print("Password added successfully.")
         elif choice == "2":
@@ -93,7 +107,11 @@ def main():
             )
             print("Account Names:")
             print(accounts_table)
-            account = input("Enter account name: ")
+            try:
+                account = input("Enter account name: ")
+            except:
+                print("\n")
+                sys.exit("Goodbye!")
             password = password_manager.get_password(account)
             if password:
                 print(tabulate([["Password:", password]], headers=[f"Password for {account}",""], tablefmt="fancy_grid"))
