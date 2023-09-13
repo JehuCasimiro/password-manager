@@ -17,6 +17,7 @@ class PasswordManager:
     def add_password(self, account, password):
         encrypted_password = self._encrypt(password)
         self.passwords[account] = encrypted_password
+        self.save_passwords_to_csv('passwords.csv')  # Automatically save when adding a password
 
     def get_password(self, account):
         if account in self.passwords:
@@ -72,8 +73,7 @@ def main():
         print("Password Manager Menu:")
         print("1. Add Password")
         print("2. Get Password")
-        print("3. Save Passwords")
-        print("4. Quit")
+        print("3. Quit")
 
         choice = input("Enter your choice: ")
 
@@ -83,6 +83,9 @@ def main():
             password_manager.add_password(account, password)
             print("Password added successfully.")
         elif choice == "2":
+            print("Account Names:")
+            for account_name in password_manager.passwords.keys():
+                print(account_name)
             account = input("Enter account name: ")
             password = password_manager.get_password(account)
             if password:
@@ -90,9 +93,6 @@ def main():
             else:
                 print(f"No password found for {account}.")
         elif choice == "3":
-            password_manager.save_passwords_to_csv(password_filename)
-            print("Passwords saved to CSV file.")
-        elif choice == "4":
             print("Goodbye!")
             break
         else:
