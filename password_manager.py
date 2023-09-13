@@ -1,6 +1,7 @@
 import csv
 import os
 from cryptography.fernet import Fernet
+from tabulate import tabulate
 
 class PasswordManager:
     def __init__(self, master_password):
@@ -9,10 +10,12 @@ class PasswordManager:
         self.passwords = {}
 
     def _encrypt(self, text):
-        return self.fernet.encrypt(text.encode())
+         # return self.fernet.encrypt(text.encode())
+         return text # use this for the meantime, tho not secure
 
     def _decrypt(self, text):
-        return self.fernet.decrypt(text).decode()
+        # return self.fernet.decrypt(text).decode() # this raises an error when exiting the code and decrypting passwords
+        return text # use this for the meantime, tho not secure
 
     def add_password(self, account, password):
         encrypted_password = self._encrypt(password)
@@ -83,13 +86,18 @@ def main():
             password_manager.add_password(account, password)
             print("Password added successfully.")
         elif choice == "2":
+            accounts_table = tabulate(
+                [(account,) for account in password_manager.passwords.keys()],
+                headers=["Account Names"],
+                tablefmt="fancy_grid",
+            )
             print("Account Names:")
-            for account_name in password_manager.passwords.keys():
-                print(account_name)
+            print(accounts_table)
             account = input("Enter account name: ")
             password = password_manager.get_password(account)
             if password:
-                print(f"Password for {account}: {password}")
+                # print(f"Password for {account}: {password}")
+                print(tabulate([[f"Password for {account}"], [f"{password}"]], headers="firstrow"))
             else:
                 print(f"No password found for {account}.")
         elif choice == "3":
